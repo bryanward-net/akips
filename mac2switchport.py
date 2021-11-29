@@ -5,8 +5,26 @@
 ### Bryan Ward, Dartmouth College
 ### bward@dartmouth.edu
 ###
-### 2021-01-24 - Functional Release
-### 2021-11-29 - Removed Debugging Code and added Usage information
+### Queries the AKIPS Switch Port Mapper API for a MAC address and returns discovered information.
+###
+###    Copyright (C) 2021 Bryan Ward
+###
+###    This program is free software: you can redistribute it and/or modify
+###    it under the terms of the GNU General Public License as published by
+###    the Free Software Foundation, either version 3 of the License, or
+###    (at your option) any later version.
+###
+###    This program is distributed in the hope that it will be useful,
+###    but WITHOUT ANY WARRANTY; without even the implied warranty of
+###    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+###    GNU General Public License for more details.
+###
+###    You should have received a copy of the GNU General Public License
+###    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+###
+### History
+###     2021-01-24 - Functional Release
+###     2021-11-29 - Removed Debugging Code and added Usage information
 ###
 ###
 ### Requirements
@@ -16,7 +34,6 @@
 ###     Files
 ###         ./akips.pem             Contains the certificate chain for the AKIPS HTTPS server
 ###                                 Example:
-###
 ###                                     -----BEGIN CERTIFICATE-----
 ###                                     MIIHA...
 ###                                     -----END CERTIFICATE-----
@@ -27,11 +44,11 @@
 ###                                     MIIDx...
 ###                                     -----END CERTIFICATE-----
 ###                                 You can get this file by going to the AKIPS GUI in Firefox, viewing the certificate details, and clicking the "PEM (chain)" link in the Miscellaneous section
-###     Python Libraries:
+###     Python Libraries
 ###         requests
 ###         certifi
 ###
-### Usage:
+### Usage
 ###     Specify MAC address via argument
 ###         ./mac2switchport.py --mac aa:bb:cc:dd:ee:ff
 ###         {"mac": "aa:bb:cc:dd:ee:ff", "vendor": "OUI-Vendor-Name", "switch": "switch-name", "port": "Gi0/23", "vlan": "vlan-name", "ipaddress": "10.1.2.3"}
