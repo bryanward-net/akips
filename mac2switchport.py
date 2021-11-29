@@ -71,12 +71,11 @@
 
 import os
 import sys
-import time
 import json
 import re
-import certifi
 import requests
 import logging
+import argparse
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -91,6 +90,10 @@ if not os.environ.get("AKIPS_API_RO_PASSWORD"):
 else:
     AKIPS_API_RO_PASSWORD = os.environ.get("AKIPS_API_RO_PASSWORD")
 
+if not os.environ.get("AKIPS_CERT"):
+    AKIPS_CERT = False
+else:
+    AKIPS_CERT = os.environ.get("AKIPS_CERT")
 
 def format_mac(mac: str) -> str:
     mac = re.sub('[.:-]', '', mac).lower()  # remove delimiters and convert to lower case
@@ -105,7 +108,7 @@ def format_mac(mac: str) -> str:
 def mac2switchport(mac, raw=False):
     logger.debug("mac2switchport entry")
     #assert len(format_mac(mac)) == 17, "MAC Address must be 17 characters"
-    r = requests.get(AKIPS_URL + "/api-spm?username=api-ro;password=" + AKIPS_API_RO_PASSWORD + ";mac=" + format_mac(mac), verify="akips.pem")
+    r = requests.get(AKIPS_URL + "/api-spm?username=api-ro;password=" + AKIPS_API_RO_PASSWORD + ";mac=" + format_mac(mac), verify=AKIPS_CERT)
     logger.debug(r)
     if raw:
         return r.text
@@ -130,13 +133,14 @@ def main():
                 json_in = json.loads(line)
                 logger.debug(json_in)
                 if type(json_in) is dict:
-                    print(mac2switchport(json_in['mac'], False))
+                    retval = mac2switchport(json_in['mac'], False)
+                    print(json.dumps(retval, indent=2))
                     sys.stdout.flush()
                 elif type(json_in) is list:
                     retval = []
                     for ele in json_in:
                         retval.append(mac2switchport(ele['mac'], False))
-                    print(json.dumps(retval))
+                    print(json.dumps(retval, indent=2))
                     sys.stdout.flush()
         except json.decoder.JSONDecodeError:
             logger.debug("STDIN is not JSON")
@@ -146,7 +150,7 @@ def main():
                     if len(line) == 0:
                         continue
                     #ToDo: Make this return a json list [] by saving results to retval and then outputting that.
-                    print(json.dumps(mac2switchport(line, False)))
+                    print(json.dumps(mac2switchport(line, False), indent=2))
                     sys.stdout.flush()
             except BrokenPipeError:
                 pass
@@ -156,9 +160,8 @@ def main():
             raise
 
     else:
-        import argparse
         parser = argparse.ArgumentParser(description='Fetch switchports where AKIPS has seen this MAC Address')
-        parser.add_argument("--mac", help="The MAC Address you'd like to query.  No punctuation, case-insensitive.", type=str, required=True)
+        parser.add_argument("--mac", help="The MAC Address you'd like to query.  Supports: 11:22:33:44:55:66:77, 1122.3344.5566, 11-22-33-44-55-66-77", type=str, required=True)
         parser.add_argument("--raw", help="Output raw results from API", action="store_true")
         parser.add_argument("--debug", help="Run and show debugging information", action="store_true")
         args = parser.parse_args()
@@ -167,7 +170,7 @@ def main():
             logger.setLevel(logging.DEBUG)
         logger.debug("Loaded")
 
-        print(json.dumps(mac2switchport(args.mac, args.raw)))
+        print(json.dumps(mac2switchport(args.mac, args.raw), indent=2))
         sys.stdout.flush()
 
 
