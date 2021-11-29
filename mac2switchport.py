@@ -31,6 +31,7 @@
 ###     Environment Variables
 ###         AKIPS_URL               URL of the AKIPS server, ex: "https://akips.example.edu"
 ###         AKIPS_API_RO_PASSWORD   Password for the Read-Only user of the AKIPS API
+###         AKIPS_CERT              Path to untrusted CA cert (globalsign intranet, etc.)
 ###     Files
 ###         ./akips.pem             Contains the certificate chain for the AKIPS HTTPS server
 ###                                 Example:
