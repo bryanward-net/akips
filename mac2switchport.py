@@ -58,9 +58,17 @@
 ###         echo aa:bb:cc:dd:ee:ff | ./mac2switchport.py
 ###         {"mac": "aa:bb:cc:dd:ee:ff", "vendor": "OUI-Vendor-Name", "switch": "switch-name", "port": "Gi0/23", "vlan": "vlan-name", "ipaddress": "10.1.2.3"}
 ###
+###     Specify MAC address via STDIN
+###         echo "                                                                                                                         ─╯
+###             94:c6:91:09:18:20
+###             94:c6:91:09:18:20" | python3 mac2switchport.py
+###
 ###     Specify MAC address in JSON via STDIN
 ###         echo '{"mac": "aa:bb:cc:dd:ee:ff"}' | ./mac2switchport.py
 ###         {'mac': 'aa:bb:cc:dd:ee:ff', 'vendor': 'OUI-Vendor-Name', 'switch': 'switch-name', 'port': 'Gi0/23', 'vlan': 'vlan-name', 'ipaddress': '10.1.2.3'}
+###
+###     Specify Multiple MAC address in JSON via STDIN
+###         echo '{"mac": ["aa:bb:cc:dd:ee:ff:", "ffee.ddcc.bbaa"]}' | python3 mac2switchport.py
 ###
 ###     This script returns JSON as output by default.  If the MAC address cannot be located by AKIPS, the script returns an empty list [].
 ###     If you wish to have the output in CSV format, use the --raw option
@@ -134,7 +142,9 @@ def main():
                 json_in = json.loads(line)
                 logger.debug(json_in)
                 if type(json_in) is dict:
-                    retval = mac2switchport(json_in['mac'], False)
+                    retval = []
+                    for mac in json_in['mac']:
+                        retval.append(mac2switchport(mac, False))
                     print(json.dumps(retval, indent=2))
                     sys.stdout.flush()
                 elif type(json_in) is list:
